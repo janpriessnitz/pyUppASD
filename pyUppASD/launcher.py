@@ -9,7 +9,6 @@ from pyUppASD.outputfile import AveragesFile, CoordFile, CumuFile, EnergyFile, M
 
 SD_PATH = os.getenv("SD_PATH", "/home/jp/UppASD/bin/sd.gfortran")
 
-
 class Result:
     def __init__(self, config, cmdres, restartfile, coordfile, structfile, averagesfile, momentsfile, energyfile, cumufile):
         self.config = copy.deepcopy(config)
@@ -24,7 +23,8 @@ class Result:
 
 
 class SDLauncher:
-    def __init__(self):
+    def __init__(self, keep_run_dir=False):
+        self.keep_run_dir = keep_run_dir
         pass
 
     def run(self, config, config_dir):
@@ -70,6 +70,9 @@ class SDLauncher:
                 config_dir, config.cumulantsfile_fname()))
         else:
             cumufile = None
+
+        if not self.keep_run_dir:
+          shutil.rmtree(config_dir, ignore_errors=True)
 
         return Result(config, p, restartfile,
                       coordfile, structfile, averagesfile, momentsfile, energyfile, cumufile)
