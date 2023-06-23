@@ -114,6 +114,29 @@ class Dmfile(AConfigFile):
         if len(self.interactions) > 0:
             super().save_config(config_dir)
 
+class Anisotropyfile(AConfigFile):
+    def __init__(self):
+        self.fname = "kfile"
+        # atom num, uniaxial(1)/cubic(2)/both(7), K1, K2, e_x, e_y, e_z, K_U/K_C (ratio of uniaxial/cubic; only if 2nd field == 7)
+        self.terms = []
+
+    def __str__(self):
+        if len(self.terms) == 0:
+            return ""
+        else:
+            return "anisotropy {}".format(self.fname)
+
+    def get_config_str(self):
+        ret = ""
+        for term in self.terms:
+            ret += "{} {} {} {} {} {} {} {}\n".format(
+                term[0], term[1], term[2], term[3], term[4], term[5], term[6], term[7])
+        return ret
+
+    def save_config(self, config_dir):
+        if len(self.terms) > 0:
+            super().save_config(config_dir)
+
 
 class AnnealSched:
     def __init__(self):
@@ -142,11 +165,14 @@ cell      {cell1_x}   {cell1_y}   {cell1_z}
           {cell3_x}   {cell3_y}   {cell3_z}
 Sym       {symmetry}                                     Symmetry of lattice (0 for no, 1 for cubic, 2 for 2d cubic, 3 for hexagonal)
 
+posfiletype {posfiletype}
+maptype {maptype}
 {posfile}
 {exchangefile}
 {momfile}
 {pdfile}
 {dmfile}
+{anisotropyfile}
 
 do_prnstruct {do_prnstruct}                                  Print lattice structure (0=no, 1=yes)
 
@@ -210,11 +236,14 @@ hfield {hx} {hy} {hz}
         self.cell3_y = 0
         self.cell3_z = 1
         self.symmetry = 0
+        self.posfiletype='C'  # C=Cartesian, D=direct
+        self.maptype = 1  # 1=Cartesian, 2=direct
         self.posfile = Posfile()
         self.exchangefile = Exchangefile()
         self.momfile = Momfile()
         self.pdfile = Pdfile()
         self.dmfile = Dmfile()
+        self.anisotropyfile = Anisotropyfile()
         self.m_ens = 1
         self.do_prnstruct = 0
         self.initmag = 1
@@ -258,6 +287,7 @@ hfield {hx} {hy} {hz}
         self.momfile.save_config(config_dir)
         self.dmfile.save_config(config_dir)
         self.pdfile.save_config(config_dir)
+        self.anisotropyfile.save_config(config_dir)
         self.restartfile.save_config(config_dir)
 
     def restartfile_fname(self):
