@@ -104,24 +104,26 @@ class Restartfile:
     def __str__(self):
         return self.RESTART_IN_NAME
 
-        # Legacy code
+def save_ovito_xyz(fname, res, ens=0):
+    coordfile = res.coordfile
+    restartfile = res.restartfile
+    config = res.config
 
+    nParticles = coordfile.n_atoms()
+    moms = restartfile.mag[ens]
+    assert nParticles == len(moms)
+    periodic_x = 'T' if config.boundary_x == 'P' else 'F'
+    periodic_y = 'T' if config.boundary_y == 'P' else 'F'
+    periodic_z = 'T' if config.boundary_z == 'P' else 'F'
+    header = "{n_particles}\nLattice=\"{ax} {ay} {az} {bx} {by} {bz} {cx} {cy} {cz}\" Properties=species:I:1:pos:R:3:force:R:3 pbc=\"{periodic_x} {periodic_y} {periodic_z}\"".format(
+                ax=config.cell1_x, ay=config.cell1_y, az=config.cell1_z,
+                bx=config.cell2_x, by=config.cell2_y, bz=config.cell2_z,
+                cx=config.cell3_x, cy=config.cell3_y, cz=config.cell3_z,
+                periodic_x=periodic_x, periodic_y=periodic_y, periodic_z=periodic_z,
+                n_particles=nParticles)
 
-class Coordfile:
-    def __init__(self, fname=None):
-        self.coords = None
-        if fname != None:
-            self.load_from_file(fname)
+    particles = coordfile.particles()
+    data = np.array([particles['atom_type'], particles['x'], particles['y'], particles['z'],
+                     moms[:,1], moms[:,2], moms[:,3]]).T
 
-    def load_from_file(self, fname):
-        self.coords = []
-        with open(fname, "r") as fp:
-            for line in fp.readlines():
-                stripped = line.strip()
-                if stripped.startswith("#"):
-                    continue
-                iatom_str, x_str, y_str, z_str, a_str, b_str = stripped.split()
-                x = float(x_str)
-                y = float(y_str)
-                z = float(z_str)
-                self.coords.append([x, y, z])
+    np.savetxt(fname, data, header=header, comments='')

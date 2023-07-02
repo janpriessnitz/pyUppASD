@@ -38,37 +38,44 @@ class SDLauncher:
         if p.returncode != 0 or len(p.stderr) > 0 or 'ERROR' in str(p.stdout):
             print(p)
             return Result(config, p, None, None, None, None, None, None, None)
+
         restartfile = Restartfile(os.path.join(
             config_dir, config.restartfile_fname()))
-        if config.do_prnstruct == 1 or config.do_prnstruct == 2:
+
+        try:
             coordfile = CoordFile(os.path.join(
                 config_dir, config.coordfile_fname()))
-        else:
+        except FileNotFoundError:
             coordfile = None
-        if config.do_prnstruct == 1:
+
+        try:
             structfile = StructFile(os.path.join(
                 config_dir, config.structfile_fname()))
-        else:
+        except FileNotFoundError:
             structfile = None
-        if config.do_avrg == 'Y':
+
+        try:
             averagesfile = AveragesFile(os.path.join(
                 config_dir, config.averagesfile_fname()))
-        else:
+        except FileNotFoundError:
             averagesfile = None
-        if config.do_tottraj == 'Y':
+
+        try:
             momentsfile = MomentsFile(os.path.join(
                 config_dir, config.momentsfile_fname()))
-        else:
+        except FileNotFoundError:
             momentsfile = None
-        if config.plotenergy == 1:
+
+        try:
             energyfile = EnergyFile(os.path.join(
                 config_dir, config.totenergyfile_fname()))
-        else:
+        except FileNotFoundError:
             energyfile = None
-        if config.do_cumu == 'Y':
+
+        try:
             cumufile = CumuFile(os.path.join(
                 config_dir, config.cumulantsfile_fname()))
-        else:
+        except FileNotFoundError:
             cumufile = None
 
         if not self.keep_run_dir:

@@ -12,9 +12,8 @@ class OutputFile:
     def load_from_file(self, fname, dtype):
         self.data = np.genfromtxt(fname, dtype=dtype)
 
+
 # i, x, y, z, site number, atom type number
-
-
 class CoordFile(OutputFile):
     def __init__(self, fname=None):
         super().__init__(fname, dtype=[
@@ -23,45 +22,45 @@ class CoordFile(OutputFile):
     def n_atoms(self):
         return self.data.shape[0]
 
+    # coordinates only (no atom types)
     def coords(self):
+        return self.particles()[['x', 'y', 'z']]
+
+    # return complete sorted data
+    def particles(self):
         # sort in case i is not in increasing order
-        return self.data[self.data['i'].argsort()][['x', 'y', 'z']]
+        return self.data[self.data['i'].argsort()]
+
 
 #  iatom jatom  itype  jtype        r_{ij}^x        r_{ij}^y        r_{ij}^z          J_{ij}        |r_{ij}|
-
-
 class StructFile(OutputFile):
     def __init__(self, fname=None):
         super().__init__(fname, dtype=[('iatom', 'i4'), ('jatom', 'i4'), ('itype', 'i4'), (
             'jtype', 'i4'), ('r_x', 'f8'), ('r_y', 'f8'), ('r_z', 'f8'), ('J', 'f8'), ('r_abs', 'f8')])
 
+
 # Iter           <M>_x           <M>_y           <M>_z             <M>        M_{stdv}
-
-
 class AveragesFile(OutputFile):
     def __init__(self, fname=None):
         super().__init__(fname, dtype=[('iter', 'i4'), ('M_x', 'f8'),
                                        ('M_y', 'f8'), ('M_z', 'f8'), ('M', 'f8'), ('M_stdv', 'f8')])
 
+
 # Iter                 Tot                 Exc                 Ani                  DM                  PD               BiqDM                  BQ                 Dip              Zeeman                 LSF                Chir                Ring                  SA
-
-
 class EnergyFile(OutputFile):
     def __init__(self, fname=None):
         super().__init__(fname, dtype=[('iter', 'i4'), ('tot', 'f8'), ('exc', 'f8'), ('ani', 'f8'), ('dm', 'f8'), ('pd', 'f8'), (
             'biqdm', 'f8'), ('bq', 'f8'), ('dip', 'f8'), ('zeeman', 'f8'), ('lsf', 'f8'), ('chir', 'f8'), ('ring', 'f8'), ('sa', 'f8')])
 
+
 # Iter             <M>           <M^2>           <M^4>      U_{Binder}            \chi        C_v(tot)             <E>       <E_{exc}>       <E_{lsf}>
-
-
 class CumuFile(OutputFile):
     def __init__(self, fname=None):
         super().__init__(fname, dtype=[('iter', 'i4'), ('M', 'f8'), ('M2', 'f8'), ('M4', 'f8'), (
             'U_Binder', 'f8'), ('chi', 'f8'), ('C_v', 'f8'), ('E', 'f8'), ('E_exc', 'f8'), ('E_lsf', 'f8')])
 
+
 # iter   ens   iatom           |Mom|             M_x             M_y             M_z
-
-
 class MomentsFile(OutputFile):
     def __init__(self, fname=None):
         super().__init__(fname, dtype=[('iter', 'i4'), ('ens', 'i4'), (
