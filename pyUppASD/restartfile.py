@@ -105,8 +105,8 @@ class Restartfile:
         return self.RESTART_IN_NAME
 
 def save_ovito_xyz(fname, res, ens=0):
-    coordfile = res.coordfile
-    restartfile = res.restartfile
+    coordfile = res.coordfile()
+    restartfile = res.restartfile()
     config = res.config
 
     nParticles = coordfile.n_atoms()
