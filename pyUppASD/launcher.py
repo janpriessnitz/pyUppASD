@@ -105,6 +105,10 @@ class SDLauncher:
         p = subprocess.run(SD_PATH, cwd=config_dir,
                            stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         print("UppASD finished [{}]".format(datetime.now()))
+        with open(os.path.join(config_dir, "stdout"), "wb") as f:
+            f.write(p.stdout)
+        with open(os.path.join(config_dir, "stderr"), "wb") as f:
+            f.write(p.stderr)
         if p.returncode != 0 or len(p.stderr) > 0 or 'ERROR' in str(p.stdout):
             print(p)
 
