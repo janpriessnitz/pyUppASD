@@ -114,6 +114,26 @@ class Dmfile(AConfigFile):
         if len(self.interactions) > 0:
             super().save_config(config_dir)
 
+class Symfile(AConfigFile):
+    def __init__(self):
+        self.fname = "sym.mat"
+        # site num #1, atom type, x, y, z, DMx, DMy, DMz
+        self.syms = []
+
+    def __str__(self):
+        return ""
+
+    def get_config_str(self):
+        ret = "{}\n".format(len(self.syms))
+        for sym in self.syms:
+            ret += "{} {} {}\n{} {} {}\n{} {} {}\n".format(
+                sym[0,0], sym[0,1], sym[0,2], sym[1,0], sym[1,1], sym[1,2], sym[2,0], sym[2,1], sym[2,2])
+        return ret
+
+    def save_config(self, config_dir):
+        if len(self.syms) > 0:
+            super().save_config(config_dir)
+
 class Anisotropyfile(AConfigFile):
     def __init__(self):
         self.fname = "kfile"
@@ -163,7 +183,7 @@ BC        {boundary_x}         {boundary_y}         {boundary_z}                
 cell      {cell1_x}   {cell1_y}   {cell1_z}
           {cell2_x}   {cell2_y}   {cell2_z}
           {cell3_x}   {cell3_y}   {cell3_z}
-Sym       {symmetry}                                     Symmetry of lattice (0 for no, 1 for cubic, 2 for 2d cubic, 3 for hexagonal)
+Sym       {symmetry}                                     Symmetry of lattice (0 for no, 1 for cubic, 2 for 2d cubic, 3 for hexagonal, 4 for custom sym.mat file)
 
 posfiletype {posfiletype}
 maptype {maptype}
@@ -236,6 +256,7 @@ hfield {hx} {hy} {hz}
         self.cell3_y = 0
         self.cell3_z = 1
         self.symmetry = 0
+        self.symfile = Symfile()
         self.posfiletype='C'  # C=Cartesian, D=direct
         self.maptype = 1  # 1=Cartesian, 2=direct
         self.posfile = Posfile()
@@ -289,6 +310,7 @@ hfield {hx} {hy} {hz}
         self.pdfile.save_config(config_dir)
         self.anisotropyfile.save_config(config_dir)
         self.restartfile.save_config(config_dir)
+        self.symfile.save_config(config_dir)
 
     def restartfile_fname(self):
         return "restart.{}.out".format(self.exp_name[:8] if len(self.exp_name) > 8 else self.exp_name)
