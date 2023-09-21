@@ -3,7 +3,7 @@ import pickle
 
 mRyToTesla = 235.0314  # 1 mRy ~ 235 Tesla for a spin with 1*muB magnetic moment
 mRyToKelvin = 157.88766343200544  # 1 mRy ~ 158 K
-
+eVtoRy = 0.0734985857  # 1 eV ~ 0.0734985857 Ry
 
 def fourier(ms, qxs, qys):
     qw, qh = qxs.shape
