@@ -180,14 +180,14 @@ def apply_config_CoO(config):
 
   return config
 
-def get_config(n_steps):
+def get_config(config_fn, n_steps):
   init_temp = 0.01
   c = config.InpsdFile()
-  c = apply_config_MnO(c)
+  c = config_fn(c)
 
-  c.size_x = 15
-  c.size_y = 15
-  c.size_z = 15
+  c.size_x = 10
+  c.size_y = 10
+  c.size_z = 10
 
   c.ip_mode = 'H'
   c.ip_mcanneal.sched = [
@@ -210,12 +210,18 @@ def get_config(n_steps):
   return c
 
 def run_sim():
-  config = get_config(1000)
+  material_dict = {
+    'CoO': apply_config_CoO,
+    'MnO': apply_config_MnO,
+    'NiO': apply_config_NiO,
+    'alphaUH3': apply_config_alphaUH3,
+  }
+  config = get_config(material_dict[sys.argv[1]], 1000)
 
   l = launcher.SDLauncher()
 
   n_points = 100
-  res = l.run(config, os.path.join(sys.argv[1], "init/"))
+  res = l.run(config, os.path.join(sys.argv[2], "init/"))
 
   for temp in np.linspace(0.01, 500, n_points):
     print("temp: {}".format(temp))
@@ -223,7 +229,7 @@ def run_sim():
     config.ip_mcanneal.sched[0][1] = temp
     config.restartfile = res.restartfile()
     config.initmag = 4
-    res = l.run(config, os.path.join(sys.argv[1], "{:2f}".format(temp)))
+    res = l.run(config, os.path.join(sys.argv[2], "{:2f}".format(temp)))
 
 if __name__ == "__main__":
   run_sim()
