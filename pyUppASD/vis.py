@@ -226,11 +226,11 @@ def anim_mag(coordfile, restartfiles, out_fname):
     csy = []
     csz = []
 
-    nAtoms = len(coordfile.coords)
+    nAtoms = len(coordfile.coords())
     ens = 0
 
     for i in range(nAtoms):
-        x, y, z = coordfile.coords[i]
+        x, y, z = coordfile.coords()[i]
         momx, momy, momz = restartfiles[0].mag[ens][i][1:]
 
         colorx = cmap((momx+1)/2)
@@ -245,17 +245,17 @@ def anim_mag(coordfile, restartfiles, out_fname):
     fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(15, 3))
 
     # plt.figure(1, figsize=(10,10))
-    sc1 = ax1.scatter(xs, ys, color=csx, s=10)
+    sc1 = ax1.scatter(xs, ys, color=csx, s=5)
     ax1.set_title("X")
     # plt.colorbar()
 
     # plt.figure(2, figsize=(10,10))
-    sc2 = ax2.scatter(xs, ys, color=csy, s=10)
+    sc2 = ax2.scatter(xs, ys, color=csy, s=5)
     ax2.set_title("Y")
     # plt.colorbar()
 
     # plt.figure(3, figsize=(10,10))
-    sc3 = ax3.scatter(xs, ys, s=10)
+    sc3 = ax3.scatter(xs, ys, s=5)
     ax3.set_title("Z")
     sc3.set(color=csz)
     plt.colorbar(plt.cm.ScalarMappable(
@@ -299,11 +299,11 @@ def anim_mag_overview(coordfile, restartfiles, configs, out_fname):
     csy = []
     csz = []
 
-    nAtoms = len(coordfile.coords)
+    nAtoms = len(coordfile.coords())
     ens = 0
 
     for i in range(nAtoms):
-        x, y, z = coordfile.coords[i]
+        x, y, z = coordfile.coords()[i]
         momx, momy, momz = restartfiles[0].mag[ens][i][1:]
 
         colorx = cmap((momx+1)/2)
