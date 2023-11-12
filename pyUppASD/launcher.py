@@ -32,7 +32,7 @@ class Result:
                 self.__restartfile = Restartfile(os.path.join(
                     self.exp_dir, self.config.restartfile_fname()))
             except FileNotFoundError:
-                self.__restartfile = None
+                self.__restartfile = Restartfile()
         return self.__restartfile
 
     def coordfile(self):
@@ -40,8 +40,8 @@ class Result:
             try:
                 self.__coordfile = CoordFile(os.path.join(
                     self.exp_dir, self.config.coordfile_fname()))
-            except FileNotFoundError:
-                self.__coordfile = None
+            except (FileNotFoundError, OSError):
+                self.__coordfile = CoordFile()
         return self.__coordfile
 
     def structfile(self):
@@ -49,8 +49,8 @@ class Result:
             try:
                 self.__structfile = StructFile(os.path.join(
                     self.exp_dir, self.config.structfile_fname()))
-            except FileNotFoundError:
-                self.__structfile = None
+            except (FileNotFoundError, OSError):
+                self.__structfile = StructFile()
         return self.__structfile
 
     def averagesfile(self):
@@ -58,8 +58,8 @@ class Result:
             try:
                 self.__averagesfile = AveragesFile(os.path.join(
                     self.exp_dir, self.config.averagesfile_fname()))
-            except FileNotFoundError:
-                self.__averagesfile = None
+            except (FileNotFoundError, OSError):
+                self.__averagesfile = AveragesFile()
         return self.__averagesfile
 
     def momentsfile(self):
@@ -67,8 +67,8 @@ class Result:
             try:
                 self.__momentsfile = MomentsFile(os.path.join(
                     self.exp_dir, self.config.momentsfile_fname()))
-            except FileNotFoundError:
-                self.__momentsfile = None
+            except (FileNotFoundError, OSError):
+                self.__momentsfile = MomentsFile()
         return self.__momentsfile
 
     def energyfile(self):
@@ -76,8 +76,8 @@ class Result:
             try:
                 self.__energyfile = EnergyFile(os.path.join(
                     self.exp_dir, self.config.totenergyfile_fname()))
-            except FileNotFoundError:
-                self.__energyfile = None
+            except (FileNotFoundError, OSError):
+                self.__energyfile = EnergyFile()
         return self.__energyfile
 
     def cumufile(self):
@@ -85,11 +85,19 @@ class Result:
             try:
                 self.__cumufile = CumuFile(os.path.join(
                     self.exp_dir, self.config.cumulantsfile_fname()))
-            except FileNotFoundError:
-                self.__cumufile = None
+            except (FileNotFoundError, OSError):
+                self.__cumufile = CumuFile()
         return self.__cumufile
 
     def dump(self, fname):
+        # call output files fns to load all data
+        self.restartfile()
+        self.coordfile()
+        self.structfile()
+        self.averagesfile()
+        self.momentsfile()
+        self.energyfile()
+        self.cumufile()
         with open(fname, "wb") as fp:
             pickle.dump(self, fp)
 
@@ -102,14 +110,19 @@ class SDLauncher:
         os.makedirs(config_dir, exist_ok=True)
         config.save_all_configs(config_dir)
         print("launching UppASD [{}]".format(datetime.now()))
+        fout = open(os.path.join(config_dir, "stdout"), "wb", buffering=0)
+        ferr = open(os.path.join(config_dir, "stderr"), "wb", buffering=0)
         p = subprocess.run(SD_PATH, cwd=config_dir,
-                           stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                           stdout=fout, stderr=ferr)
+        fout.close()
+        ferr.close()
         print("UppASD finished [{}]".format(datetime.now()))
-        with open(os.path.join(config_dir, "stdout"), "wb") as f:
-            f.write(p.stdout)
-        with open(os.path.join(config_dir, "stderr"), "wb") as f:
-            f.write(p.stderr)
-        if p.returncode != 0 or len(p.stderr) > 0 or 'ERROR' in str(p.stdout):
+        with open(os.path.join(config_dir, "stdout"), "r") as fout:
+            stdout = fout.read()
+        with open(os.path.join(config_dir, "stderr"), "r") as ferr:
+            stderr = ferr.read()
+
+        if p.returncode != 0 or len(stderr) > 0 or 'ERROR' in stdout:
             print(p)
 
         return Result(config, p, config_dir)

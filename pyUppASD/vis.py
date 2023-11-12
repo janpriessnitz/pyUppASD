@@ -29,8 +29,13 @@ def plot_mag_inner(coordfile, restartfile):
     csy = cmap((momys+1)/2)
     csz = cmap((momzs+1)/2)
 
-    fig, (ax1, ax2, ax3, ax4) = plt.subplots(1, 4, figsize=(
-        10, 2.4), dpi=600, width_ratios=(1, 1, 1, 0.05))
+    try:
+        fig, (ax1, ax2, ax3, ax4) = plt.subplots(1, 4, figsize=(
+            10, 2.4), dpi=600, width_ratios=(1, 1, 1, 0.05))
+    except Exception as e:
+        fig, (ax1, ax2, ax3, ax4) = plt.subplots(1, 4, figsize=(
+            10, 2.4), dpi=600)
+
 
     # ax1.set_facecolor("lightgrey")
     # ax2.set_facecolor("lightgrey")

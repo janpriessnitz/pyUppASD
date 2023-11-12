@@ -193,6 +193,7 @@ maptype {maptype}
 {pdfile}
 {dmfile}
 {anisotropyfile}
+do_dip {do_dip}
 
 do_prnstruct {do_prnstruct}                                  Print lattice structure (0=no, 1=yes)
 
@@ -265,6 +266,7 @@ hfield {hx} {hy} {hz}
         self.pdfile = Pdfile()
         self.dmfile = Dmfile()
         self.anisotropyfile = Anisotropyfile()
+        self.do_dip = 0
         self.m_ens = 1
         self.do_prnstruct = 0
         self.initmag = 1
