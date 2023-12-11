@@ -213,6 +213,7 @@ ip_hfield {ip_hx} {ip_hy} {ip_hz}
 plotenergy {plotenergy}
 do_avrg {do_avrg}
 avrg_step {avrg_step}
+avrg_buff {avrg_buff}
 do_tottraj {do_tottraj}
 tottraj_step {tottraj_step}
 do_cumu {do_cumu}
@@ -289,7 +290,8 @@ hfield {hx} {hy} {hz}
         self.hz = 0
         self.plotenergy = 0
         self.do_avrg = 'N'
-        self.avrg_step = 1000
+        self.avrg_step = 100
+        self.avrg_buff = 10
         self.do_tottraj = 'N'
         self.tottraj_step = 1000
         self.do_cumu = 'N'
