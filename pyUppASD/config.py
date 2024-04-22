@@ -180,6 +180,7 @@ class InpsdFile(AConfigFile):
         '''simid     {exp_name}
 ncell     {size_x}       {size_y}       {size_z}               System size
 BC        {boundary_x}         {boundary_y}         {boundary_z}                 Boundary conditions (0=vacuum,P=periodic)
+alat {alat}
 cell      {cell1_x}   {cell1_y}   {cell1_z}
           {cell2_x}   {cell2_y}   {cell2_z}
           {cell3_x}   {cell3_y}   {cell3_z}
@@ -248,6 +249,7 @@ hfield {hx} {hy} {hz}
         self.boundary_x = 'P'
         self.boundary_y = 'P'
         self.boundary_z = '0'
+        self.alat = 1e-10  # scaling: unit cell and positions in Angstroms
         self.cell1_x = 1
         self.cell1_y = 0
         self.cell1_z = 0
