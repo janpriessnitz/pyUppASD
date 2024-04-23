@@ -301,6 +301,9 @@ hfield {hx} {hy} {hz}
         self.cumu_buff = 10
 
     def get_config_str(self):
+        # pickle-related backwards-compatilibity hack
+        self.alat = self.__dict__.get('alat', 1)
+
         if self.mode == 'S':
             main_phase = self.subtemplate_SD.format(**self.__dict__)
         else:
@@ -333,8 +336,8 @@ hfield {hx} {hy} {hz}
     def averagesfile_fname(self):
         return "averages.{}.out".format(self.exp_name[:8] if len(self.exp_name) > 8 else self.exp_name)
 
-    def totenergyfile_fname(self):
+    def energyfile_fname(self):
         return "totenergy.{}.out".format(self.exp_name[:8] if len(self.exp_name) > 8 else self.exp_name)
 
-    def cumulantsfile_fname(self):
+    def cumufile_fname(self):
         return "cumulants.{}.out".format(self.exp_name[:8] if len(self.exp_name) > 8 else self.exp_name)

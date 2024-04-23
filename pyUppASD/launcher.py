@@ -75,7 +75,7 @@ class Result:
         if not self.__energyfile:
             try:
                 self.__energyfile = EnergyFile(os.path.join(
-                    self.exp_dir, self.config.totenergyfile_fname()))
+                    self.exp_dir, self.config.energyfile_fname()))
             except (FileNotFoundError, OSError):
                 self.__energyfile = EnergyFile()
         return self.__energyfile
@@ -84,7 +84,7 @@ class Result:
         if not self.__cumufile:
             try:
                 self.__cumufile = CumuFile(os.path.join(
-                    self.exp_dir, self.config.cumulantsfile_fname()))
+                    self.exp_dir, self.config.cumufile_fname()))
             except (FileNotFoundError, OSError):
                 self.__cumufile = CumuFile()
         return self.__cumufile
@@ -100,6 +100,19 @@ class Result:
         self.cumufile()
         with open(fname, "wb") as fp:
             pickle.dump(self, fp)
+
+    # dump all contents into a folder like it was written by UppASD
+    def unpack(self, expdir):
+        os.makedirs(expdir, exist_ok=True)
+        self.restartfile().save_to_file(os.path.join(expdir, self.config.restartfile_fname()))
+        self.coordfile().save_to_file(os.path.join(expdir, self.config.coordfile_fname()))
+        self.structfile().save_to_file(os.path.join(expdir, self.config.structfile_fname()))
+        self.averagesfile().save_to_file(os.path.join(expdir, self.config.averagesfile_fname()))
+        self.momentsfile().save_to_file(os.path.join(expdir, self.config.momentsfile_fname()))
+        self.energyfile().save_to_file(os.path.join(expdir, self.config.energyfile_fname()))
+        self.cumufile().save_to_file(os.path.join(expdir, self.config.cumufile_fname()))
+        self.config.save_all_configs(expdir)
+
 
 class SDLauncher:
     def __init__(self):

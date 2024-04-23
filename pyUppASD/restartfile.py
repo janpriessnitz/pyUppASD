@@ -6,9 +6,9 @@ class Restartfile:
     header = \
         '''################################################################################
 # File type: R
-# Simulation type: M
-# Number of atoms:       0
-# Number of ensembles:         0
+# Simulation type: X
+# Number of atoms:       {}
+# Number of ensembles:         {}
 ################################################################################
 #iter     ens   iatom           |Mom|             M_x             M_y             M_z
 '''
@@ -58,8 +58,10 @@ class Restartfile:
 
     def save_to_file(self, fname):
         iteration = -1
+        num_ens = len(self.mag)
+        num_atoms = len(self.mag[0])
         with open(fname, 'w') as fp:
-            fp.write(self.header)
+            fp.write(self.header.format(num_atoms, num_ens))
             iens = 1
             for ens_mag in self.mag:
                 iatom = 1
